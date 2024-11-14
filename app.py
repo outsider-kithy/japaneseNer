@@ -6,4 +6,7 @@ def create_app():
     from api import views as api_views
     app.register_blueprint(api_views.api, url_prefix="/api")
 
+    from title import views as title_views
+    app.register_blueprint(title_views.title, url_prefix="/title")
+
     return app

@@ -3,12 +3,12 @@ from flask import Blueprint, request
 from transformers import BertJapaneseTokenizer, BertForTokenClassification
 from transformers import pipeline
 
-api = Blueprint(
-    "api",
+title = Blueprint(
+    "title",
     __name__
 )
 
-@api.route("/")
+@title.route("/")
 def index():
     text = ""
     if request.args.get('q') is not None:
@@ -22,28 +22,26 @@ def index():
     ner_pipeline = pipeline('ner', model=model, tokenizer=tokenizer)
     outputs = ner_pipeline(text)
     print(outputs)
-
-    names_tokens = []
+    
+    title_tokens = []
     for output in outputs:
-        if output['entity'] == 'B-法人名' or output['entity'] == 'I-法人名':
-            names_tokens.append(output['word'])
+        if output['entity'] == 'B-製品名':
+            title_tokens.append(output['word'])
         else:
             continue
+    
+    print(title_tokens)
 
-    print(names_tokens)
-
-    # entityがB-法人名の後に続くI-法人名属性を持つ単語を結合し、固有名詞として配列resultsに格納
     results = []
     for i in range(len(outputs)):
-        if outputs[i]['entity'] == 'B-法人名':
-
+        if outputs[i]['entity'] == 'B-製品名':
+            
             name = outputs[i]['word']
             for j in range(i+1, len(outputs)):
-                if outputs[j]['entity'] == 'I-法人名':
+                if outputs[j]['entity'] == 'I-製品名':
                     name += outputs[j]['word']
                     results.append(name)
                 else:
                     break
-
-    print(results)
+    
     return results
