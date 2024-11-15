@@ -2,6 +2,7 @@ import sys
 from flask import Blueprint, request
 from transformers import BertJapaneseTokenizer, BertForTokenClassification
 from transformers import pipeline
+import json
 
 api = Blueprint(
     "api",
@@ -41,9 +42,9 @@ def index():
             for j in range(i+1, len(outputs)):
                 if outputs[j]['entity'] == 'I-法人名':
                     name += outputs[j]['word']
-                    results.append(name)
                 else:
                     break
+            results.append(name)
 
-    print(results)
-    return results
+    #resultsをjson形式で返す
+    return json.dumps(results, ensure_ascii=False)
